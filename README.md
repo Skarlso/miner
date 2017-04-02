@@ -1,6 +1,6 @@
 # Miner
 
-![imgs/logo.png](Logo)
+![Logo](./imgs/logo.png)
 
 Miner is a Go utility to manage multiple Minecraft servers with simple commands and Docker Containers to keep them isolated.
 
