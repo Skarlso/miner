@@ -1,5 +1,5 @@
 # Miner
-
+I discontinued this in favour of my nodejs app which does the same as this. https://github.com/Skarlso/js-miner
 ![Logo](./imgs/logo.png)
 
 Miner is a Go utility to manage multiple Minecraft servers with simple commands and Docker Containers to keep them isolated.
