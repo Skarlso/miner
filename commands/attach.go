@@ -1,8 +1,10 @@
 package commands
 
 import (
-	"fmt"
+	"bytes"
+	"log"
 
+	"github.com/Skarlso/miner/config"
 	commander "github.com/Yitsushi/go-commander"
 	docker "github.com/fsouza/go-dockerclient"
 )
@@ -18,18 +20,25 @@ func (a Attach) Execute(opts *commander.CommandHelper) {
 	if err != nil {
 		panic(err)
 	}
-	imgs, err := client.ListImages(docker.ListImagesOptions{All: false})
+	containerName := opts.Arg(0)
+	if len(containerName) < 1 {
+		c := config.Config{}
+		c.Unmarshal()
+		containerName = c.Name
+	}
+	log.Println("Attaching to:", containerName)
+	var buf bytes.Buffer
+	err = client.AttachToContainer(docker.AttachToContainerOptions{
+		Container:    containerName,
+		OutputStream: &buf,
+		Logs:         true,
+		Stdout:       true,
+		Stderr:       true,
+	})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	for _, img := range imgs {
-		fmt.Println("ID: ", img.ID)
-		fmt.Println("RepoTags: ", img.RepoTags)
-		fmt.Println("Created: ", img.Created)
-		fmt.Println("Size: ", img.Size)
-		fmt.Println("VirtualSize: ", img.VirtualSize)
-		fmt.Println("ParentId: ", img.ParentID)
-	}
+	log.Println(buf.String())
 }
 
 // NewAttach Creates a new Attach command.

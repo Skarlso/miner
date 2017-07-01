@@ -18,8 +18,8 @@ func NewStop(appName string) *commander.CommandWrapper {
 			Name:             "stop",
 			ShortDescription: "Stop a running server.",
 			LongDescription:  `Stop a running server. Stop also issues a stop command to the running minecraft server. Thus state will be saved.`,
-			Arguments:        "",
-			Examples:         []string{""},
+			Arguments:        "name",
+			Examples:         []string{"", "my_server"},
 		},
 	}
 }

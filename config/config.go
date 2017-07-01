@@ -1,15 +1,14 @@
 package config
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
 	"path/filepath"
-	"strconv"
-)
 
-// REGION to operate in.
-var REGION string
+	"gopkg.in/yaml.v2"
+)
 
 var configPath string
 
@@ -26,19 +25,68 @@ func Path() string {
 	if err != nil {
 		log.Fatalf("Error occurred: %s", err.Error())
 	}
-	return filepath.Join(usr.HomeDir, ".config", "go-furnace")
+	return filepath.Join(usr.HomeDir, ".config", "miner")
 }
 
-func init() {
-	configPath = Path()
-	REGION = os.Getenv("FURNACE_REGION")
-	spinner := os.Getenv("FURNACE_SPINNER")
-	if len(spinner) < 1 {
-		SPINNER = 7
-	} else {
-		SPINNER, _ = strconv.Atoi(spinner)
+const (
+	// CRAFTBUKKIT use craftbukkit mod
+	CRAFTBUKKIT = iota
+	// FORGE use forge mod
+	FORGE
+)
+
+// Config is a struct of default configuration values
+type Config struct {
+	Spinner    int    `yaml:"spinner"`
+	Bucket     string `yaml:"bucket"`
+	Name       string `yaml:"name"`
+	RepoTag    string `yaml:"repoTag"`
+	BindBase   string `yaml:"bindBase"`
+	AwsProfile string `yaml:"awsProfile"`
+}
+
+// Unmarshal config values
+func (c *Config) Unmarshal() {
+	data, err := ioutil.ReadFile(getConfigFilePath())
+	if err != nil {
+		log.Fatal("Error opening config file: ", err)
 	}
-	if len(REGION) < 1 {
-		log.Fatal("Please define a region to operate in with FURNACE_REGION exp: eu-central-1.")
+	err = yaml.Unmarshal(data, c)
+	if err != nil {
+		log.Fatal("Error unmarshalling config file: ", err)
+	}
+}
+
+// GetMod returns the modding option to use with a new server
+func GetMod() int {
+	mod := os.Getenv("MINER_MOD")
+	if len(mod) == 0 {
+		return CRAFTBUKKIT
+	}
+	return FORGE
+}
+
+func getConfigFilePath() string {
+	configPath := Path()
+	return filepath.Join(configPath, "miner_config.yaml")
+}
+
+// Init initialize the base configuration entry
+func Init() {
+	configPath = Path()
+	if _, err := os.Stat(configPath); err != nil {
+		if os.IsNotExist(err) {
+			log.Println("Detecting first run. Creating default config and user folder under: ", configPath)
+			if err := os.MkdirAll(configPath, os.ModeDir|os.ModePerm); err != nil {
+				log.Fatalf("Failed to create base folder at '%s' with error: '%s'", configPath, err.Error())
+			}
+			defaultConfig := []byte(`spinner: 7
+bucket: my-minecraft-backup-bucket
+name: miner_server
+repoTag: skarlso/minecraft
+bindBase: default
+awsProfile: default`)
+			ioutil.WriteFile(filepath.Join(configPath, "miner_config.yaml"), defaultConfig, os.ModePerm)
+		}
 	}
 }
