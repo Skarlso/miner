@@ -9,15 +9,24 @@ import (
 )
 
 // PullImage pulls an image named `image`
-func PullImage(image string) {
+func PullImage(image, version string) {
 	client := getClient()
 	opts := docker.PullImageOptions{
 		OutputStream: os.Stdout,
-		Repository:   "skarlso/minecraft",
-		Tag:          "1.12",
+		Repository:   image,
+		Tag:          version,
 	}
 	auth := docker.AuthConfiguration{}
 	client.PullImage(opts, auth)
+}
+
+// StartServer starts a server
+func StartServer(server, version string) {
+	client := getClient()
+	opts := docker.CreateContainerOptions{
+		Name: server,
+	}
+	container := client.CreateContainer
 }
 
 func getClient() *docker.Client {

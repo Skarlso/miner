@@ -29,10 +29,10 @@ func (s Setup) Execute(opts *commander.CommandHelper) {
 	}
 	log.Printf(`Creating world with following options:
 Name: %s
-Version: %s
-Mod: %s
-Bind Location: %s`, cyan(name), cyan(version), cyan(config.GetMod()), cyan(c.BindBase))
-	utils.PullImage(c.BindBase + ":" + version)
+Version: %s`, cyan(name), cyan(version))
+	utils.PullImage(c.BindBase, version)
+	utils.SetVersion(version, name)
+	log.Println("Successfully setup server with name: ", cyan(name))
 }
 
 // NewSetup Creates a new Setup command.

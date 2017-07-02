@@ -7,6 +7,8 @@ import (
 	"os/user"
 	"path/filepath"
 
+	"bytes"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -80,12 +82,14 @@ func Init() {
 			if err := os.MkdirAll(configPath, os.ModeDir|os.ModePerm); err != nil {
 				log.Fatalf("Failed to create base folder at '%s' with error: '%s'", configPath, err.Error())
 			}
+			bindBase := configPath
 			defaultConfig := []byte(`spinner: 7
 bucket: my-minecraft-backup-bucket
 name: miner_server
 repoTag: skarlso/minecraft
-bindBase: default
+bindBase: <replace>
 awsProfile: default`)
+			defaultConfig = bytes.Replace(defaultConfig, []byte("<replace>"), []byte(bindBase), -1)
 			ioutil.WriteFile(filepath.Join(configPath, "miner_config.yaml"), defaultConfig, os.ModePerm)
 		}
 	}
