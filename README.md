@@ -23,9 +23,7 @@ Thus, it's easy to get a server, which uses mods like the ever famous `/home` te
 In order for this to be globally available, run the following:
 
 ```bash
-git clone https://github.com/Skarlso/js-miner
-cd js-miner
-npm link
+go get github.com/Skarlso/miner
 ```
 
 This should install a globally available version of this CLI tool.
@@ -40,31 +38,42 @@ again the modules will be enabled.
 This tool also provides the option to backup a World to a configured S3 bucket. The world is zipped and uploaded using local AWS
 credentials located under the AWS CLI credentials file.
 
-js-miner depends on a few environment variables which can be configured.
+`miner` depends on a few environment variables which can be configured.
 
 ## Configuration Options
 
-```javascript
-config.bucket = process.env.MINER_BUCKET || 'my-minecraft-backup-bucket';
-config.defaultName = 'miner_server';
-const configDir = os.homedir() + '/.miner_world/';
-config.bindBase = process.env.MINER_WORLD_BIND_BASE || configDir;
-config.profile = process.env.MINER_AWS_PROFILE || 'default';
-config.repoTag = process.env.MINE_CON_BASE || 'skarlso/minecraft:'
+```yaml
+spinner: 7
+bucket: my-minecraft-backup-bucket
+name: miner_server
+repoTag: skarlso/minecraft
+bindBase: default
+awsProfile: default
 ```
 
-* `MINER_BUCKET` specifies the bucket in which the miner backs up the world
-* `defaultName` is the name of the world if no name is provided (it might be obsolete)
+* `spinner` sets which spinner to use from this list:
+```go
+var Spinners = []string{`←↖↑↗→↘↓↙`,
+	`▁▃▄▅▆▇█▇▆▅▄▃`,
+	`┤┘┴└├┌┬┐`,
+	`◰◳◲◱`,
+	`◴◷◶◵`,
+	`◐◓◑◒`,
+	`⣾⣽⣻⢿⡿⣟⣯⣷`,
+	`|/-\`}
+```
+* `bucket` specifies the bucket in which the miner backs up the world
+* `name` is the name of the world if no name is provided (it might be obsolete)
 * `bindBase` is the folder to use for the containers to bind their volume into. This is the location where your worlds will be located at.
 This one is important to remember, because you are going to have to interact with these worlds, as they contain the plugins and settings for
 any given server. This is how worlds/plugins/settings/mods are persisted for servers.
-* `profile` aws is configured using the AWS credential file. If you have a different profile you would like to use with js-miner than the
+* `awsProfile` aws is configured using the AWS credential file. If you have a different profile you would like to use with `miner` than the
 default one, please set this environment property.
 * `repoTag` if you don't want wait for me to push new versions up Docker, you can use your Own container. The only requirement is that there is a `/data` folder and a `/minecraft` folder. In `/minecraft` there are two files: `forge.jar`, `craftbukkit.jar` and `minecraft_server.jar`. Although I'm not a 100% sure if that is a requirement by either modding solutions.
 
 ## LifeCycle
 
-So what is a typical usage cycle for js-miner?
+So what is a typical usage cycle for `miner`?
 
 ### Setup
 
@@ -73,18 +82,18 @@ Run the following command to pull the required image for your server and setup t
 about what version the server will use. Do this by running `setup`:
 
 ```bash
-js-miner setup -m 1.11.2 -n new_world
+miner setup -m 1.11.2 -n new_world
 ```
 
 ### Start
 
-This is where you define what mod miner should use to generate your world. By default it will use `craftbukkit`. You can override this by
+This is where you define what mod `miner` should use to generate your world. By default it will use `craftbukkit`. You can override this by
 setting the environment property `MINER_MOD` to `forge`.
 
 In order to actually generate a world run the following:
 
 ```bash
-js-miner start -n new_world
+miner start -n new_world
 ```
 
 At this point, you have an un-altered, vanilla version of the world with default settings.
@@ -94,7 +103,7 @@ At this point, you have an un-altered, vanilla version of the world with default
 If you have to edit something, or have your own world you would like to use, or alter some setting, first, stop the world.
 
 ```bash
-js-miner stop -n new_world
+miner stop -n new_world
 ```
 
 This saves the world and stops the container. Now, navigate to the world folder located under `$MINER_WORLD_BIND_BASE/.mine_world/new_world`
@@ -107,7 +116,7 @@ Once done, you can start the world again and new settings will be available to y
 When done using the world, save and stop it by issuing the stop command again:
 
 ```bash
-js-miner stop -n new_world
+miner stop -n new_world
 ```
 
 This also sends a `stop` to the Minecraft server which will save the current version of the world.
@@ -117,7 +126,7 @@ This also sends a `stop` to the Minecraft server which will save the current ver
 Backup frequently if you tend to mess up everything by running the following:
 
 ```bash
-js-miner backup -n new_world
+miner backup -n new_world
 ```
 
 This will zip and timestamp your world and upload to the S3 bucket defined in your settings.
@@ -129,7 +138,7 @@ It's possible to attach to a running server if one wants to run some commands li
 To attach to a running world simply run:
 
 ```bash
-js-miner attach -n new_world
+miner attach -n new_world
 ```
 
 You can start typing away your commands to the server.
@@ -143,7 +152,7 @@ Luckily, forge install is now very easy, and has a gui. You can install the clie
 To choose Forge mod, run a server like this:
 
 ```bash
-MINER_MOD=forge js-miner start -n lucky_world
+MINER_MOD=forge miner start -n lucky_world
 ```
 
 ## Versions

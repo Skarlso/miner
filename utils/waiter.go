@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Skarlso/go-furnace/config"
+	"github.com/Skarlso/miner/config"
 	"github.com/fatih/color"
 )
 
@@ -14,6 +14,9 @@ var red = color.New(color.FgRed).SprintFunc()
 
 // WaitForFunctionWithStatusOutput waits for a function to complete its action.
 func WaitForFunctionWithStatusOutput(state string, freq int, f func()) {
+	c := config.Config{}
+	c.Unmarshal()
+	spinner := c.Spinner
 	var wg sync.WaitGroup
 	wg.Add(1)
 	done := make(chan bool)
@@ -25,8 +28,8 @@ func WaitForFunctionWithStatusOutput(state string, freq int, f func()) {
 	go func() {
 		counter := 0
 		for {
-			counter = (counter + 1) % len(Spinners[config.SPINNER])
-			fmt.Printf("\r[%s] Waiting for state: %s", yellow(string(Spinners[config.SPINNER][counter])), red(state))
+			counter = (counter + 1) % len(Spinners[spinner])
+			fmt.Printf("\r[%s] Waiting for state: %s", yellow(string(Spinners[spinner][counter])), red(state))
 			time.Sleep(time.Duration(freq) * time.Second)
 			select {
 			case <-done:

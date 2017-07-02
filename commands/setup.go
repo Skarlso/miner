@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Skarlso/miner/config"
+	"github.com/Skarlso/miner/utils"
 	commander "github.com/Yitsushi/go-commander"
 	"github.com/fatih/color"
 )
@@ -31,6 +32,7 @@ Name: %s
 Version: %s
 Mod: %s
 Bind Location: %s`, cyan(name), cyan(version), cyan(config.GetMod()), cyan(c.BindBase))
+	utils.PullImage(c.BindBase + ":" + version)
 }
 
 // NewSetup Creates a new Setup command.
