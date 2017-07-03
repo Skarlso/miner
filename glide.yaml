@@ -1,5 +1,10 @@
-package: github.com/Skarlso/miner
+package: .
 import:
+- package: github.com/Skarlso/miner
+  subpackages:
+  - commands
+  - config
+  - utils
 - package: github.com/Yitsushi/go-commander
 - package: github.com/docker/docker
   subpackages:
