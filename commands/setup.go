@@ -30,7 +30,7 @@ func (s Setup) Execute(opts *commander.CommandHelper) {
 	log.Printf(`Creating world with following options:
 Name: %s
 Version: %s`, cyan(name), cyan(version))
-	utils.PullImage(c.BindBase, version)
+	utils.PullImage(c.RepoTag, version)
 	utils.SetVersion(version, name)
 	log.Println("Successfully setup server with name: ", cyan(name))
 }

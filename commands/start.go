@@ -24,6 +24,7 @@ func (s Start) Execute(opts *commander.CommandHelper) {
 	cyan := color.New(color.FgCyan).SprintFunc()
 	version := utils.GetVersion(name)
 	log.Printf("Starting server with name %s and version %s.\n", cyan(name), cyan(version))
+	utils.StartServer(name, version)
 }
 
 // NewStart Creates a new Start command.
