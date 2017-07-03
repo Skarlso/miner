@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"os"
-
+	"github.com/Skarlso/miner/config"
 	docker "github.com/fsouza/go-dockerclient"
 )
 
@@ -22,11 +22,36 @@ func PullImage(image, version string) {
 
 // StartServer starts a server
 func StartServer(server, version string) {
-	client := getClient()
-	opts := docker.CreateContainerOptions{
-		Name: server,
+	var mod string
+	switch config.GetMod() {
+	case config.CRAFTBUKKIT:
+		mod = "craftbukkit"
+	case config.FORGE:
+		mod = "forge"
 	}
-	container := client.CreateContainer
+	labels := map[string]string{
+		"world": server,
+	}
+	client := getClient()
+	config := docker.Config{
+		AttachStderr: true,
+		AttachStdin:  true,
+		AttachStdout: true,
+		Cmd: []string{"bash", "-c", "echo \"eula=true\" > eula.txt ; java -jar /minecraft/" + mod + ".jar nogui"},
+		Labels: labels,
+	}
+	opts := docker.CreateContainerOptions{
+		Name:   server,
+		Config: &config,
+	}
+	hostConfig := docker.HostConfig{
+		PortBindings
+	}
+	container, err := client.CreateContainer(opts)
+	if err != nil {
+		log.Fatalln("Error creating container: ", err)
+	}
+	client.StartContainer(container.ID, )
 }
 
 func getClient() *docker.Client {
