@@ -1,13 +1,24 @@
 package commands
 
-import commander "github.com/Yitsushi/go-commander"
+import (
+	"github.com/Skarlso/miner/config"
+	"github.com/Skarlso/miner/utils"
+	commander "github.com/Yitsushi/go-commander"
+)
 
 // Stop command struct.
 type Stop struct {
 }
 
 // Execute main entry point for the command.
-func (c Stop) Execute(opts *commander.CommandHelper) {
+func (s Stop) Execute(opts *commander.CommandHelper) {
+	c := config.Config{}
+	c.Unmarshal()
+	name := opts.Arg(0)
+	if len(name) == 0 {
+		name = c.Name
+	}
+	utils.StopServer(name)
 }
 
 // NewStop Creates a new Stop command.

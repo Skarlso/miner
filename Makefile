@@ -8,12 +8,6 @@ build:
 test:
 	go test ./...
 
-get-deps:
-	go get github.com/aws/aws-sdk-go
-	go get github.com/Yitsushi/go-commander
-	go get github.com/fatih/color
-	go get github.com/fsouza/go-dockerclient
-
 install:
 	go install
 
@@ -22,5 +16,8 @@ clean:
 
 linux:
 	env GOOS=linux GOARCH=arm go build -o ${BINARY}
+
+windows:
+	env GOOS=windows GOARCH=386 go build -o ${BINARY}.exe
 
 .PHONY: clean build test linux

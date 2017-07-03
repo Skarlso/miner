@@ -12,6 +12,7 @@ import (
 	"github.com/Skarlso/miner/config"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/fatih/color"
@@ -28,6 +29,49 @@ func PullImage(image, version string) {
 	}
 	defer out.Close()
 	io.Copy(os.Stdout, out)
+}
+
+// AttachServer attach to minecraft server
+func AttachServer(server string) {
+	cli := getClient()
+	ctx := context.Background()
+	con := getDockerContainer(server)
+	log.Printf("Attaching to server '%s' with container name '%s'\n.", server, con)
+	conn, err := cli.ContainerAttach(ctx, con, types.ContainerAttachOptions{
+		Stderr: true,
+		Stdin:  true,
+		Stdout: true,
+		Stream: true,
+		Logs:   true,
+	})
+	if err != nil {
+		log.Fatal("Error while attaching: ", err)
+	}
+	defer conn.Close()
+	io.Copy(os.Stdout, conn.Reader)
+}
+
+// StopServer stopping minecraft server
+func StopServer(server string) {
+	cli := getClient()
+	ctx := context.Background()
+	con := getDockerContainer(server)
+	log.Printf("Stoping server '%s' with container name '%s'\n.", server, con)
+	conn, err := cli.ContainerAttach(ctx, con, types.ContainerAttachOptions{
+		Stderr: true,
+		Stdin:  true,
+		Stdout: true,
+		Stream: true,
+		Logs:   true,
+	})
+	if err != nil {
+		log.Fatal("Error while attaching: ", err)
+	}
+	defer conn.Close()
+	_, err = conn.Conn.Write([]byte("stop\r"))
+	if err != nil {
+		log.Fatal("Error sending shutdown signal: ", err)
+	}
 }
 
 // StartServer starts a server
@@ -47,7 +91,7 @@ func StartServer(server, version string) {
 	cli := getClient()
 	ctx := context.Background()
 	containerConfig := &container.Config{
-		AttachStderr: true,
+		AttachStderr: false,
 		AttachStdin:  true,
 		AttachStdout: true,
 		Cmd:          []string{"bash", "-c", "echo \"eula=true\" > eula.txt ; java -jar /minecraft/" + mod + ".jar nogui"},
@@ -55,6 +99,8 @@ func StartServer(server, version string) {
 		WorkingDir:   "/data",
 		Image:        c.RepoTag + ":" + version,
 		Tty:          true,
+		OpenStdin:    true,
+		StdinOnce:    false,
 		Volumes: map[string]struct{}{
 			"/data": struct{}{},
 		},
@@ -89,4 +135,23 @@ func getClient() *client.Client {
 		log.Fatal("Error while creating client: ", err)
 	}
 	return cli
+}
+
+func getDockerContainer(serverName string) string {
+	cli := getClient()
+	ctx := context.Background()
+	fills := filters.NewArgs()
+	fills.Add("label", "world="+serverName)
+	fills.Add("status", "running")
+	con, err := cli.ContainerList(ctx, types.ContainerListOptions{
+		All:     true,
+		Filters: fills,
+	})
+	if err != nil {
+		log.Fatal("Failed to find container for server with error: ", err)
+	}
+	if len(con) < 1 {
+		log.Fatal("No containers found running with label: ", serverName)
+	}
+	return con[0].Names[0][1:]
 }
