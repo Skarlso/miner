@@ -60,28 +60,21 @@ func StartServer(server, version string) {
 		},
 	}
 	port, _ := nat.NewPort("tcp", "25565")
-	bindings := []nat.PortBinding{
-		HostIP:   "",
-		HostPort: "25565",
-	}
-	portMap := map[nat.Port][]nat.PortBinding{
-		port: bindings,
-	}
+	portMap := nat.PortMap(map[nat.Port][]nat.PortBinding{
+		port: []nat.PortBinding{{
+			HostIP:   "",
+			HostPort: "25565",
+		}},
+	})
 	containerHostConfig := &container.HostConfig{
 		Binds:        []string{filepath.Join(c.BindBase, server) + ":/data"},
 		PortBindings: portMap,
 	}
-	resp, err := cli.ContainerCreate(ctx, containerConfig, nil, nil, "")
+	resp, err := cli.ContainerCreate(ctx, containerConfig, containerHostConfig, nil, "")
 	if err != nil {
 		log.Fatal("Error while creating container: ", err)
 	}
-	log.Println("Container started with ID: ", resp.ID)
-	containerStartOpts := types.ContainerStartOptions{}
-	container, err := client.CreateContainer(opts)
-	if err != nil {
-		log.Fatalln("Error creating container: ", err)
-	}
-	err = client.StartContainer(container.ID, &hostConfig)
+	err = cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{})
 	if err != nil {
 		red := color.New(color.FgRed).SprintFunc()
 		log.Fatal("Failed to start container with error: ", red(err.Error()))
