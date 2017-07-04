@@ -22,9 +22,8 @@ func (b Backup) Execute(opts *commander.CommandHelper) {
 		name = c.Name
 	}
 	cyan := color.New(color.FgCyan).SprintFunc()
-	version := utils.GetVersion(name)
-	log.Printf("Starting server with name %s and version %s.\n", cyan(name), cyan(version))
-	utils.Backup(server)
+	log.Printf("Backing up server with name %s.\n", cyan(name))
+	utils.Backup(name)
 }
 
 // NewBackup Creates a new Backup command.
