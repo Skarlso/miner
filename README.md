@@ -40,6 +40,18 @@ credentials located under the AWS CLI credentials file.
 
 `miner` depends on a few environment variables which can be configured.
 
+## Install
+
+### Binaries
+
+### Source
+
+#### Glide, Godep, Dep
+
+Because docker merged it's API into docker/docker and they depend on the Vendored version of go-connections it's not possible to build this project without a dependency management software like, [Glide](https://github.com/Masterminds/glide), [Godep](https://github.com/tools/godep) or [Dep](https://github.com/golang/dep).
+
+A Glide config yaml is already provided.
+
 ## Configuration Options
 
 ```yaml

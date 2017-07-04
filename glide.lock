@@ -1,8 +1,8 @@
-hash: 2b759f48a0db5abd3885a1f36565739c4f1c5b5e20cef3684ea4598f392b0cc2
-updated: 2017-07-04T06:39:29.877279697+02:00
+hash: a69b5ce16f9fc3f26efd89a429f65bce502bea28e47aff7562e93d6fcd70538f
+updated: 2017-07-04T07:15:19.670682784+02:00
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: c51a820979fe0b6688e7e2760efa516b25d6ad4f
+  version: a5a7f553e106c0b1dcbfbdaeb8774592fcc1a68a
   subpackages:
   - aws
   - aws/awserr
@@ -37,7 +37,7 @@ imports:
   - digestset
   - reference
 - name: github.com/docker/docker
-  version: 714c226b431c73efa43373fb7a284408b709c80f
+  version: 90d35abf7b3535c1c319c872900fbd76374e521c
   subpackages:
   - api
   - api/types
@@ -57,11 +57,10 @@ imports:
   - client
   - pkg/ioutils
   - pkg/longpath
-  - pkg/mount
   - pkg/system
   - pkg/tlsconfig
 - name: github.com/docker/go-connections
-  version: 3ede32e2033de7505e6500d6c868c2b9ed9f169d
+  version: 990a1a1a70b0da4c4cb70e117971a4f0babfbf1a
   subpackages:
   - nat
   - sockets
@@ -71,7 +70,7 @@ imports:
 - name: github.com/docker/libtrust
   version: aabc10ec26b754e797f9028f4589c5b7bd90dc20
 - name: github.com/fatih/color
-  version: 62e9147c64a1ed519147b62a56a14e83e2be02c1
+  version: 570b54cabe6b8eb0bc2dfce68d964677d63b5260
 - name: github.com/go-ini/ini
   version: 3d73f4b845efdf9989fffd4b4e562727744a34ba
 - name: github.com/jmespath/go-jmespath
@@ -79,24 +78,25 @@ imports:
 - name: github.com/kardianos/osext
   version: ae77be60afb1dcacde03767a8c37337fad28ac14
 - name: github.com/mattn/go-colorable
-  version: 941b50ebc6efddf4c41c8e4537a5f68a4e686b24
+  version: 5411d3eea5978e6cdc258b30de592b60df6aba96
+  repo: https://github.com/mattn/go-colorable
 - name: github.com/mattn/go-isatty
-  version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
+  version: 57fdcb988a5c543893cc61bce354a6e24ab70022
+  repo: https://github.com/mattn/go-isatty
 - name: github.com/Microsoft/go-winio
   version: f533f7a102197536779ea3a8cb881d639e21ec5a
 - name: github.com/opencontainers/go-digest
   version: 279bed98673dd5bef374d3b6e4b09e2af76183bf
-- name: github.com/opencontainers/image-spec
-  version: 7bc3b5b132f031210eab98e4fdd2faa3e15f4773
+- name: github.com/opencontainers/runc
+  version: 3a5b963f2f0a924e1f0b81dc3b0a31249af92ed1
   subpackages:
-  - specs-go
-  - specs-go/v1
+  - libcontainer/user
 - name: github.com/pkg/errors
   version: c605e284fe17294bda444b34710735b29d1a9d90
 - name: github.com/Sirupsen/logrus
   version: 7dd06bf38e1e13df288d471a57d5adbac106be9e
 - name: github.com/Yitsushi/go-commander
-  version: b89ee866c1daf2c6502f4b97182c7a3a75891922
+  version: 6b77592be51afa6cef1a415a6376e57832721b8a
 - name: golang.org/x/net
   version: 1f9224279e98554b6a6432d4dd998a739f8b2b7c
   subpackages:
@@ -104,7 +104,8 @@ imports:
   - context/ctxhttp
   - proxy
 - name: golang.org/x/sys
-  version: 0e0164865330d5cf1c00247be08330bf96e2f87c
+  version: e24f485414aeafb646f6fca458b0bf869c0880a1
+  repo: https://go.googlesource.com/sys
   subpackages:
   - unix
   - windows
