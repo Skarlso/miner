@@ -12,14 +12,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var configPath string
-
-// WAITFREQUENCY global wait frequency default.
-var WAITFREQUENCY = 1
-
-// SPINNER is the index of which spinner to use. Defaults to 7.
-var SPINNER int
-
 // Path retrieves the main configuration path.
 func Path() string {
 	// Get configuration path
@@ -61,7 +53,7 @@ func (c *Config) Unmarshal() {
 
 // GetMod returns the modding option to use with a new server
 func GetMod() int {
-	mod := os.Getenv("MINER_MOD")
+	mod := os.Getenv("MINER_FORGE_MOD")
 	if len(mod) == 0 {
 		return CRAFTBUKKIT
 	}
@@ -75,7 +67,7 @@ func getConfigFilePath() string {
 
 // Init initialize the base configuration entry
 func Init() {
-	configPath = Path()
+	configPath := Path()
 	if _, err := os.Stat(configPath); err != nil {
 		if os.IsNotExist(err) {
 			log.Println("Detecting first run. Creating default config and user folder under: ", configPath)
