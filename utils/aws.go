@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -19,7 +18,7 @@ func Backup(server string) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-
+	red := color.New(color.FgRed).SprintFunc()
 	c := config.Config{}
 	c.Unmarshal()
 	bucket := c.Bucket
@@ -27,7 +26,7 @@ func Backup(server string) {
 	file, err := os.Open(filename)
 
 	if err != nil {
-		exitErrorf("Unable to open file %q, %v", err)
+		log.Fatalf("Unable to open file %q, %v\n", red(filename), red(err))
 	}
 
 	defer file.Close()
@@ -42,13 +41,8 @@ func Backup(server string) {
 	})
 
 	if err != nil {
-		exitErrorf("Unable to upload %q to %q, %v", filename, bucket, err)
+		log.Fatalf("Unable to upload %q to %q, %v", red(filename), red(bucket), red(err))
 	}
 	green := color.New(color.FgGreen).SprintFunc()
-	log.Printf("%s uploaded %q to %q\n", green("Successfully"), cyan(filename), cyan(bucket))
-}
-
-func exitErrorf(msg string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, msg+"\n", args...)
-	os.Exit(1)
+	log.Printf("%s uploaded %s to %s.\n", green("Successfully"), cyan(filename), cyan(bucket))
 }
