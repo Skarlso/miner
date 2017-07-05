@@ -4,9 +4,7 @@ import (
 	"context"
 	"io"
 	"log"
-
 	"os"
-
 	"path/filepath"
 
 	"github.com/Skarlso/miner/config"
@@ -71,6 +69,86 @@ func StopServer(server string) {
 	_, err = conn.Conn.Write([]byte("stop\r"))
 	if err != nil {
 		log.Fatal("Error sending shutdown signal: ", err)
+	}
+}
+
+// DeleteServer removes a server permanently including the tagged container
+func DeleteServer(server string) {
+	log.Println("I hope you backedup everything...")
+	yellow := color.New(color.FgYellow).SprintFunc()
+	cli := getClient()
+	ctx := context.Background()
+	fills := filters.NewArgs()
+	fills.Add("label", "world="+server)
+	con, err := cli.ContainerList(ctx, types.ContainerListOptions{
+		All:     true,
+		Filters: fills,
+	})
+	if err != nil {
+		log.Fatal("Failed to find container for server with error: ", err)
+	}
+	if len(con) > 0 {
+		log.Println("Container found with status: ", yellow(con[0].State))
+		err := cli.ContainerRemove(ctx, con[0].ID, types.ContainerRemoveOptions{
+			Force: true,
+		})
+		if err != nil {
+			log.Fatal("Error removing container: ", err)
+		}
+		log.Println("Done.")
+		log.Println(yellow("Removing world folder."))
+		folder := filepath.Join(config.Path(), server+"/")
+		if err := os.RemoveAll(folder); err != nil {
+			log.Fatal("Error removing world folder: ", err)
+		}
+		log.Println("Done.")
+	}
+	filename := filepath.Join(config.Path(), server+".txt")
+	if _, err := os.Stat(filename); err == nil {
+		log.Println(yellow("Removing version file."))
+		os.Remove(filename)
+	}
+	log.Println("All done.")
+}
+
+// StatusServer retrieve status of a server
+func StatusServer(server string) {
+	cli := getClient()
+	ctx := context.Background()
+	fills := filters.NewArgs()
+	fills.Add("label", "world="+server)
+	con, err := cli.ContainerList(ctx, types.ContainerListOptions{
+		All:     true,
+		Filters: fills,
+	})
+	if err != nil {
+		log.Fatal("Failed to find container for server with error: ", err)
+	}
+	var version string
+	worldExists := false
+	var status string
+	var state string
+
+	if len(con) > 0 {
+		worldExists = true
+		status = con[0].Status
+		state = con[0].State
+	}
+	if _, err := os.Stat(filepath.Join(config.Path(), server+".txt")); err == nil {
+		version = GetVersion(server)
+	}
+	green := color.New(color.FgGreen).SprintFunc()
+	if worldExists {
+		log.Printf(`Status of server: %s
+State of server: %s
+Version: %s
+Was Started At Least Once: %v`, green(status), green(state), green(version), green(worldExists))
+	} else {
+		if len(version) > 0 {
+			log.Println("Version file exists for world, but was not yet started. Version:", green(version))
+		} else {
+			log.Println("World doesn't exist: ", server)
+		}
 	}
 }
 

@@ -17,5 +17,7 @@ func main() {
 	registry.Register(commands.NewStop)
 	registry.Register(commands.NewAttach)
 	registry.Register(commands.NewBackup)
+	registry.Register(commands.NewStatus)
+	registry.Register(commands.NewDelete)
 	registry.Execute()
 }
