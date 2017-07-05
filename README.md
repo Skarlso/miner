@@ -136,6 +136,33 @@ miner attach new_world
 
 Note: At this moment, sending commands doesn't work yet. But will soon-ish.
 
+### Status
+
+If you would like to attain information about a server you have the `status` command for that. This works even if the world was never created or only a version file exists.
+
+```bash
+miner status new_world
+2017/07/05 09:57:39 Status of server: Exited (0) 11 minutes ago
+State of server: exited
+Version: 1.12
+Was Started At Least Once: true
+```
+
+### Delete
+
+Once you had enough, you can purge everything with a simple `delete` command.
+
+```bash
+miner delete new_world
+2017/07/05 10:12:45 I hope you backedup everything...
+2017/07/05 10:12:45 Container found with status:  running
+2017/07/05 10:12:46 Done.
+2017/07/05 10:12:46 Removing world folder.
+2017/07/05 10:12:46 Done.
+2017/07/05 10:12:46 Removing version file.
+2017/07/05 10:12:46 All done.
+```
+
 ## Mods
 
 Both, craftbukkit and forge are supported mods and come with the server pre-configured. For forge, the installed mod goes into the `mod` folder of the world for craftbukkit, it goes into the `plugin` folder. If the server is started with Forge mods, the mods need to be present on the client side as well most of the times.
