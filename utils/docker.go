@@ -172,7 +172,7 @@ func StartServer(server, version string) {
 		AttachStderr: false,
 		AttachStdin:  true,
 		AttachStdout: true,
-		Cmd:          []string{"bash", "-c", "echo \"eula=true\" > eula.txt ; java -jar /minecraft/" + mod + ".jar nogui"},
+		Cmd:          []string{"bash", "-c", "echo \"eula=true\" > eula.txt ; java -jar -Xmx2048M -Xms2048M /minecraft/" + mod + ".jar nogui"},
 		Labels:       labels,
 		WorkingDir:   "/data",
 		Image:        c.RepoTag + ":" + version,
